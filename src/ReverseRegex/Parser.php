@@ -111,7 +111,7 @@ class Parser
                         
                         # test for literal characters (abcd)
                         $this->left = new LiteralScope();
-                        $this->left->addLiteral($this->lexer->lookahead['value']);
+                        $this->left->addLiteral($this->lexer->lookahead->value);
                         $this->head->attach($this->left);
                         
                     break;
@@ -185,7 +185,7 @@ class Parser
         }
         catch(ParserException $e)
         {
-            $pos = $this->lexer->lookahead['position'];
+            $pos = $this->lexer->lookahead->position;
             $compressed = $this->compress();
             throw new ParserException(sprintf('Error found STARTING at position %s after `%s` with msg %s ',$pos,$compressed,$e->getMessage()));
         }
@@ -201,12 +201,12 @@ class Parser
       */    
     public function compress()
     {
-        $current   = $this->lexer->lookahead['position'];
+        $current   = $this->lexer->lookahead->position;
         $this->lexer->reset();
         $string = '';
         
-        while($this->lexer->moveNext() && $this->lexer->lookahead['position'] <= $current) {
-            $string .= $this->lexer->lookahead['value'];
+        while($this->lexer->moveNext() && $this->lexer->lookahead->position <= $current) {
+            $string .= $this->lexer->lookahead->value;
         }
         
         return $string;

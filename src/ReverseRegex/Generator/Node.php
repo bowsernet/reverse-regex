@@ -1,11 +1,12 @@
 <?php
 namespace ReverseRegex\Generator;
 
-use \ArrayObject;
-use \SplObjectStorage;
-use \ArrayAccess;
-use \Countable;
-use \Iterator;
+use ArrayObject;
+use Closure;
+use SplObjectStorage;
+use ArrayAccess;
+use Countable;
+use Iterator;
 
 /**
   *  Base to all Generator Scopes 
@@ -36,7 +37,7 @@ class Node implements ArrayAccess, Countable, Iterator
       *  @access public
       *  @param string $label
       */
-    public function __construct($label = 'node')
+    public function __construct(string $label = 'node')
     {
         $this->attrs = new ArrayObject();
         $this->links = new SplObjectStorage();
@@ -50,8 +51,8 @@ class Node implements ArrayAccess, Countable, Iterator
       *  @access public
       *  @return string the nodes label
       */
-    public function getLabel()
-    {
+    public function getLabel(): string
+	{
         return $this->label;
     }
 
@@ -61,7 +62,7 @@ class Node implements ArrayAccess, Countable, Iterator
       *  @access public
       *  @param string $label the nodes label
       */
-    public function setLabel($label)
+    public function setLabel(string $label)
     {
         if (!(is_scalar($label) || is_null($label))) {
             return false;
@@ -78,8 +79,8 @@ class Node implements ArrayAccess, Countable, Iterator
       *  @param Node $node the node to attach
       *  @return Node
       */
-    public function &attach(Node $node)
-    {
+    public function &attach(Node $node): Node
+	{
         $this->links->attach($node);
 
         return $this;
@@ -92,8 +93,8 @@ class Node implements ArrayAccess, Countable, Iterator
       *  @return Node
       *  @param Node $node the node to remove
       */
-    public function &detach(Node $node)
-    {
+    public function &detach(Node $node): Node
+	{
         foreach ($this->links as $linked_node) {
             if ($linked_node == $node) {
                 $this->links->detach($node);
@@ -110,8 +111,8 @@ class Node implements ArrayAccess, Countable, Iterator
       *  @return boolean true if found
       *  @param Node $node the node to search for
       */
-    public function contains(Node $node)
-    {
+    public function contains(Node $node): bool
+	{
         foreach ($this->links as $linked_node) {
             if ($linked_node == $node) {
                 return true;
@@ -125,9 +126,9 @@ class Node implements ArrayAccess, Countable, Iterator
      *  Apply a closure to all relations
      *
      *  @access public
-     *  @param Closer the function to apply
+     *  @param Closure the function to apply
      */
-    public function map(Closure $function)
+    public function map(Closure $function): void
     {
         foreach ($this->links as $node) {
             $function($node);
@@ -137,56 +138,56 @@ class Node implements ArrayAccess, Countable, Iterator
     //------------------------------------------------------------------
     # Countable
     
-    public function count()
-    {
+    public function count(): int
+	{
         return count($this->links);
     }
     
     //------------------------------------------------------------------
     # Iterator
 
-    public function current()
+    public function current(): mixed
     {
         return $this->links->current();
     }
-    public function key()
+    public function key(): mixed
     {
-        return $this->links->key();
+        $this->links->key();
     }
-    public function next()
+    public function next(): void
     {
-        return $this->links->next();
+        $this->links->next();
     }
-    public function rewind()
+    public function rewind(): void
     {
-        return $this->links->rewind();
+        $this->links->rewind();
     }
-    public function valid()
-    {
+    public function valid(): bool
+	{
         return $this->links->valid();
     }
     
     //------------------------------------------------------------------
     # ArrayAccess Implementation
 
-    public function offsetGet($key)
+    public function offsetGet(mixed $offset): mixed
     {
-        return $this->attrs->offsetGet($key);
+        return $this->attrs->offsetGet($offset);
     }
 
-    public function offsetSet($key, $value)
+    public function offsetSet(mixed $offset, $value): void
     {
-        $this->attrs->offsetSet($key, $value);
+        $this->attrs->offsetSet($offset, $value);
     }
 
-    public function offsetExists($key)
-    {
-        return $this->attrs->offsetExists($key);
+    public function offsetExists(mixed $offset): bool
+	{
+        return $this->attrs->offsetExists($offset);
     }
 
-    public function offsetUnset($key)
+    public function offsetUnset(mixed $offset): void
     {
-        return $this->attrs->offsetUnset($key);
+        $this->attrs->offsetUnset($offset);
     }
 }
 

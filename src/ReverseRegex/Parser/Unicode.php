@@ -45,26 +45,26 @@ class Unicode implements StrategyInterface
                 
                 $lexer->moveNext();
 
-                if($lexer->lookahead['value'] !== '{' )  {
+                if($lexer->lookahead->value !== '{' )  {
                     throw new ParserException('Expecting character { after \X none found');                
                 }
                 
                 $tokens = array();
-                while($lexer->moveNext() && $lexer->lookahead !== null && $lexer->lookahead['value']  !== '}') {
+                while($lexer->moveNext() && $lexer->lookahead !== null && $lexer->lookahead->value  !== '}') {
                     
                     # check if we nested eg.{ddd{d}
-                    if($lexer->lookahead['value']  === '{') {
+                    if($lexer->lookahead->value  === '{') {
                         throw new ParserException('Nesting hex value ranges is not allowed');
                     }
                 
-                    if($lexer->lookahead['value'] !== " " && ctype_xdigit($lexer->lookahead['value']) === false) {
-                        throw new ParserException(sprintf('Character %s is not a hexdeciaml digit',$lexer->lookahead['value']));
+                    if($lexer->lookahead->value !== " " && ctype_xdigit($lexer->lookahead->value) === false) {
+                        throw new ParserException(sprintf('Character %s is not a hexdeciaml digit',$lexer->lookahead->value));
                     }
                 
-                    $tokens[] = $lexer->lookahead['value'];
+                    $tokens[] = $lexer->lookahead->value;
                 }
                 # check that current lookahead is a closing character as it's possible to iterate to end of string (i.e. lookahead === null)
-                if($lexer->lookahead === null || $lexer->lookahead['value'] !== '}') {
+                if($lexer->lookahead === null || $lexer->lookahead->value !== '}') {
                     throw new ParserException('Closing quantifier token `}` not found');     
                 }
                 
@@ -80,14 +80,14 @@ class Unicode implements StrategyInterface
             case ($lexer->isNextToken(Lexer::T_SHORT_X)) :
                 // only allow another 2 hex characters
                 $glimpse = $lexer->glimpse();
-                if($glimpse['value']  === '{') {
+                if($glimpse->value === '{') {
                     throw new ParserException('Braces not supported here');
                 }
                 
                 $tokens = array();
                 $count = 2;
                 while($count > 0 && $lexer->moveNext()) {
-                    $tokens[] = $lexer->lookahead['value'];
+                    $tokens[] = $lexer->lookahead->value;
                     --$count;
                 }
                 

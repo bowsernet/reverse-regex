@@ -39,7 +39,7 @@ class CharacterClass implements StrategyInterface
                     $collection[] = $unicode->evaluate($lexer);
                 break;
                 case($lexer->isNextTokenAny(array(Lexer::T_LITERAL_CHAR, Lexer::T_LITERAL_NUMERIC))):
-                    $collection[] = $lexer->lookahead['value'];
+                    $collection[] = $lexer->lookahead->value;
                 break;
                 case($lexer->isNextToken(Lexer::T_SET_RANGE)):
                     $collection[] = '-';
@@ -54,7 +54,7 @@ class CharacterClass implements StrategyInterface
         }
         
         /*
-        if($lexer->lookahead['type'] === null) {
+        if($lexer->lookahead->type === null) {
             throw new ParserException('Closing character set token not found');
         } */
         
@@ -75,12 +75,12 @@ class CharacterClass implements StrategyInterface
       */
     public function parse(Scope $head, Scope $set, Lexer $lexer)
     {
-        if($lexer->lookahead['type'] !== Lexer::T_SET_OPEN) {
+        if($lexer->lookahead->type !== Lexer::T_SET_OPEN) {
             throw new ParserException('Opening character set token not found');
         }
         
         $peek = $lexer->glimpse();
-        if($peek['type'] === Lexer::T_SET_NEGATED) {
+        if($peek->type === Lexer::T_SET_NEGATED) {
              throw new ParserException('Negated Character Set ranges not supported at this time');
         }
         
@@ -89,13 +89,13 @@ class CharacterClass implements StrategyInterface
         while( $normal_lexer->moveNext() && !$normal_lexer->isNextToken(Lexer::T_SET_CLOSE)) {
             $glimpse = $normal_lexer->glimpse();
          
-            if($glimpse['type'] === Lexer::T_SET_RANGE) {
+            if($glimpse->type === Lexer::T_SET_RANGE) {
                 continue; //value be included in range when `-` character is passed
             }
          
             switch(true) {
                 case($normal_lexer->isNextToken(Lexer::T_SET_RANGE)) :
-                    $range_start = $normal_lexer->token['value'];
+                    $range_start = $normal_lexer->token->value;
                     
                     $normal_lexer->moveNext();
                     
@@ -103,13 +103,13 @@ class CharacterClass implements StrategyInterface
                         $normal_lexer->moveNext();
                     }
                     
-                    $range_end =  $normal_lexer->lookahead['value'];
+                    $range_end =  $normal_lexer->lookahead->value;
                     $this->fillRange($head,$range_start,$range_end);
                     
                 break;    
                 case($normal_lexer->isNextToken(Lexer::T_LITERAL_NUMERIC) || $normal_lexer->isNextToken(Lexer::T_LITERAL_CHAR)) :
-                    $index = (integer)Utf8::ord($normal_lexer->lookahead['value']);
-                    $head->setLiteral($index,$normal_lexer->lookahead['value']);
+                    $index = (integer)Utf8::ord($normal_lexer->lookahead->value);
+                    $head->setLiteral($index,$normal_lexer->lookahead->value);
                 break;
                 default:
                     # ignore     
